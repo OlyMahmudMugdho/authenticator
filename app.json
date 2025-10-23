@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "Authenticator",
+    "slug": "Authenticator",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/auth-face-svgrepo-com.png",
+    "scheme": "authenticator",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/auth-face-svgrepo-com-512-removebg-preview.jpg",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.OlyMahmudMugdho.Authenticator"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9ebeec6f-122d-471a-852a-719581acc17a"
+      }
+    }
+  }
+}
