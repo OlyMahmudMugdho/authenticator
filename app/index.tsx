@@ -6,15 +6,20 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  useColorScheme,
+  StatusBar,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { Link, useFocusEffect } from "expo-router";
 import { generateTOTP } from "../utils/totp";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const [accounts, setAccounts] = useState<
     { username: string; secret: string; otp: string; remaining: number }[]
   >([]);
+
+  const colorScheme = useColorScheme();
 
   const loadAccounts = async () => {
     try {
@@ -89,7 +94,8 @@ export default function HomeScreen() {
   });
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar />
       <Link asChild href="/add" style={styles.addButton}>
         <Text style={styles.addText}>Add Account</Text>
       </Link>
@@ -122,7 +128,7 @@ export default function HomeScreen() {
           )}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 

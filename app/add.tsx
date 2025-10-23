@@ -3,6 +3,7 @@ import { View, TextInput, Button, StyleSheet, Alert, Text } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AddForm() {
   const [username, setUsername] = useState("");
@@ -15,19 +16,23 @@ export default function AddForm() {
     if (!permission) requestPermission();
   }, [permission]);
 
-  const handleSubmit = async () => {
-    if (!username || !secret) {
+  const handleSubmit = async (scannedAccount?: {
+    username: string;
+    secret: string;
+  }) => {
+    const accountToSave = scannedAccount || { username, secret };
+
+    if (!accountToSave.username || !accountToSave.secret) {
       Alert.alert("Error", "Please fill in both fields.");
       return;
     }
 
-    const account = { username, secret };
-
     try {
       const storedData = await SecureStore.getItemAsync("accounts");
       const accounts = storedData ? JSON.parse(storedData) : [];
-      accounts.push(account);
+      accounts.push(accountToSave);
       await SecureStore.setItemAsync("accounts", JSON.stringify(accounts));
+
       Alert.alert("Success", "Account saved securely.");
       setUsername("");
       setSecret("");
@@ -42,21 +47,28 @@ export default function AddForm() {
     setScanning(false);
     try {
       const url = new URL(data);
+      const pathname = decodeURIComponent(url.pathname);
+      const appname =
+        pathname.split(":")[1] || pathname.split("/")[1] || "Unknown";
       const secretParam = url.searchParams.get("secret");
+
       if (secretParam) {
+        setUsername(appname);
         setSecret(secretParam);
-        Alert.alert("Success", "Secret scanned from QR code!");
+        handleSubmit({ username: appname, secret: secretParam }); // ✅ use direct values
+        Alert.alert("Success", "Secret scanned and saved!");
       } else {
-        Alert.alert("Error", "Invalid QR code.");
+        Alert.alert("Error", "Invalid QR code (no secret found).");
       }
-    } catch {
+    } catch (err) {
+      console.error("QR parse error:", err);
       Alert.alert("Error", "Failed to parse QR code.");
     }
   };
 
   if (scanning) {
     return (
-      <View style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }}>
         <CameraView
           style={{ flex: 1 }}
           facing="back"
@@ -64,7 +76,7 @@ export default function AddForm() {
           barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
         />
         <Button title="Cancel" onPress={() => setScanning(false)} />
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -73,11 +85,11 @@ export default function AddForm() {
     return <Text>No access to camera. Enable permissions in settings.</Text>;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TextInput
         style={styles.input}
         placeholder="Account Name..."
-        placeholderTextColor="black"
+        placeholderTextColor="gray"
         value={username}
         onChangeText={setUsername}
         autoCapitalize="none"
@@ -85,15 +97,15 @@ export default function AddForm() {
       <TextInput
         style={styles.input}
         placeholder="Secret Key..."
-        placeholderTextColor="black"
+        placeholderTextColor="gray"
         value={secret}
         onChangeText={setSecret}
       />
 
       <Button title="Scan QR Code" onPress={() => setScanning(true)} />
       <View style={{ marginTop: 12 }} />
-      <Button title="Save Account" onPress={handleSubmit} />
-    </View>
+      <Button title="Save Account" onPress={() => handleSubmit()} />
+    </SafeAreaView>
   );
 }
 
@@ -102,7 +114,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    marginBottom: 200,
   },
   input: {
     borderWidth: 1,
