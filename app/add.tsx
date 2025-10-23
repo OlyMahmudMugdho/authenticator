@@ -76,16 +76,16 @@ export default function AddForm() {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Username or Email"
-        placeholderTextColor="#888" // set to gray
+        placeholder="Account Name..."
+        placeholderTextColor="black"
         value={username}
         onChangeText={setUsername}
         autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
-        placeholder="Secret"
-        placeholderTextColor="#888" // set to gray
+        placeholder="Secret Key..."
+        placeholderTextColor="black"
         value={secret}
         onChangeText={setSecret}
       />
